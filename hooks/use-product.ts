@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import type { Product, ProductsResponse, FilterState } from "../types"
 import { ProductAPI } from "@/lib/api"
+import { sortProducts } from "../utils/sorting"
 
 export function useProducts() {
   const [products, setProducts] = useState<Product[]>([])
@@ -10,6 +11,12 @@ export function useProducts() {
   const [error, setError] = useState<string | null>(null)
   const [total, setTotal] = useState(0)
   const [currentPage, setCurrentPage] = useState(1)
+  const [categories, setCategories] = useState<string[]>([])
+  const [filters, setFilters] = useState<FilterState>({
+    category: "",
+    sortBy: "title-asc",
+    sortOrder: "asc",
+  })
 
   const limit = 20
 
@@ -27,9 +34,10 @@ export function useProducts() {
         response = await ProductAPI.getProducts(limit, skip)
       }
 
-      const products = response.products;
+      // Sort products client-side
+      const sortedProducts = sortProducts(response.products, sortBy)
 
-      setProducts(products)
+      setProducts(sortedProducts)
       setTotal(response.total)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch products")
@@ -38,9 +46,27 @@ export function useProducts() {
     }
   }
 
+  const fetchCategories = async () => {
+    try {
+      const categoriesData = await ProductAPI.getCategories()
+      setCategories(categoriesData)
+    } catch (err) {
+      console.error("Failed to fetch categories:", err)
+    }
+  }
+
   useEffect(() => {
-    fetchProducts(currentPage)
-  }, [currentPage])
+    fetchCategories()
+  }, [])
+
+  useEffect(() => {
+    fetchProducts(currentPage, filters.category, filters.sortBy)
+  }, [currentPage, filters.category, filters.sortBy])
+
+  const updateFilters = (newFilters: Partial<FilterState>) => {
+    setFilters((prev) => ({ ...prev, ...newFilters }))
+    setCurrentPage(1) // Reset to first page when filters change
+  }
 
   const nextPage = () => {
     if (currentPage * limit < total) {
@@ -63,7 +89,11 @@ export function useProducts() {
     total,
     currentPage,
     totalPages,
+    categories,
+    filters,
+    updateFilters,
     nextPage,
     prevPage,
+    refetch: () => fetchProducts(currentPage, filters.category, filters.sortBy),
   }
 }

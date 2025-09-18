@@ -2,18 +2,22 @@
 
 import { Pagination } from "@/components/pagination";
 import { ProductGrid } from "@/components/product-grid";
+import { ProductGridHeader } from "@/components/product-grid-header";
 import { useProducts } from "@/hooks/use-product";
 import { Product } from "@/types";
 
 export default function Home() {
 
-  const { 
+  const {
     products,
     loading,
     error,
     total,
     currentPage,
     totalPages,
+    categories,
+    filters,
+    updateFilters,
     nextPage,
     prevPage,
   } = useProducts()
@@ -50,7 +54,13 @@ export default function Home() {
           <div className="flex-1 min-w-0">
             
             {/* Product Grid Header for Sorting */}
-            <div>Product Grid Header</div>
+            {!loading && !error && (
+              <ProductGridHeader
+                totalProducts={total}
+                currentSort={filters.sortBy}
+                onSortChange={(sort) => updateFilters({ sortBy: sort })}
+              />
+            )}
             
             {/* Product Grid */}
             <ProductGrid
