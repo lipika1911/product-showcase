@@ -6,7 +6,11 @@ import { Product } from "@/types";
 
 export default function Home() {
 
-  const { products } = useProducts()
+  const { 
+    products,
+    loading,
+    error,
+  } = useProducts()
 
   const handleProductClick = (product: Product) => {
   }
@@ -45,6 +49,8 @@ export default function Home() {
             {/* Product Grid */}
             <ProductGrid
               products={products}
+              loading={loading}
+              error={error}
               onProductClick={handleProductClick}
             />
 

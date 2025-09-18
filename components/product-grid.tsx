@@ -1,15 +1,29 @@
 "use client"
 import type { Product } from "../types"
+import { ErrorMessage } from "./error-message"
+import { LoadingSpinner } from "./loading-spinner"
 import { ProductCard } from "./product-card"
 
 interface ProductGridProps {
   products: Product[]
+  loading: boolean
+  error: string | null
   onProductClick: (product: Product) => void
 }
 
 export function ProductGrid({
   products,
+  loading,
+  error,
+  onProductClick,
 }: ProductGridProps) {
+    if (loading) {
+        return <LoadingSpinner />
+    }
+
+    if (error) {
+        return <ErrorMessage message={error} />
+    }
 
   return (
     <div
