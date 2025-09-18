@@ -5,23 +5,120 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Star } from "lucide-react"
 import type { Product } from "../types"
+import { useEffect, useRef } from "react"
+import gsap from "gsap"
 
 interface ProductCardProps {
   product: Product
   onClick?: () => void
   className?: string
+  index?: number
 }
 
-export function ProductCard({ product, onClick, className }: ProductCardProps){
+export function ProductCard({ product, onClick, className, index = 0, }: ProductCardProps){
+  const cardRef = useRef<HTMLDivElement>(null)
+  const imageRef = useRef<HTMLDivElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
 
   const discountedPrice = product.price * (1 - product.discountPercentage / 100)
 
+  useEffect(() => {
+    const card = cardRef.current
+    const image = imageRef.current
+    const content = contentRef.current
+
+    if (!card || !image || !content) return
+    
+    // Initial animation on mount
+    gsap.fromTo(
+      card,
+      {
+        opacity: 0,
+        y: 30,
+        scale: 0.95,
+      },
+      {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        duration: 0.6,
+        delay: index * 0.1,
+        ease: "power2.out",
+      },
+    )
+
+    // Hover animations
+    const handleMouseEnter = () => {
+      gsap.to(card, {
+        y: -8,
+        scale: 1.02,
+        duration: 0.3,
+        ease: "power2.out",
+      })
+
+      gsap.to(image, {
+        scale: 1.1,
+        duration: 0.4,
+        ease: "power2.out",
+      })
+
+      gsap.to(content, {
+        y: -2,
+        duration: 0.3,
+        ease: "power2.out",
+      })
+    }
+
+    const handleMouseLeave = () => {
+      gsap.to(card, {
+        y: 0,
+        scale: 1,
+        duration: 0.3,
+        ease: "power2.out",
+      })
+
+      gsap.to(image, {
+        scale: 1,
+        duration: 0.4,
+        ease: "power2.out",
+      })
+
+      gsap.to(content, {
+        y: 0,
+        duration: 0.3,
+        ease: "power2.out",
+      })
+    }
+
+    const handleClick = () => {
+      gsap.to(card, {
+        scale: 0.95,
+        duration: 0.1,
+        ease: "power2.out",
+        yoyo: true,
+        repeat: 1,
+        onComplete: () => onClick?.(),
+      })
+    }
+
+    card.addEventListener("mouseenter", handleMouseEnter)
+    card.addEventListener("mouseleave", handleMouseLeave)
+    card.addEventListener("click", handleClick)
+
+    return () => {
+      card.removeEventListener("mouseenter", handleMouseEnter)
+      card.removeEventListener("mouseleave", handleMouseLeave)
+      card.removeEventListener("click", handleClick)
+    }
+  }, [onClick, index])
+
   return (
     <Card
+      ref={cardRef}
       className="group cursor-pointer overflow-hidden transition-shadow duration-300 hover:shadow-xl"
       onClick={onClick}
     >
-      <div className="relative aspect-square overflow-hidden">
+      <div ref={imageRef} className="relative aspect-square overflow-hidden">
         <Image
           src={product.thumbnail || "/placeholder.svg"}
           alt={product.title}
@@ -45,7 +142,7 @@ export function ProductCard({ product, onClick, className }: ProductCardProps){
         </Badge>
       </div>
 
-      <CardContent className="p-3 md:p-4">
+      <CardContent ref={contentRef} className="p-3 md:p-4">
         <div className="space-y-2">
           <div className="flex items-start justify-between gap-2">
             <h3 className="font-semibold text-sm md:text-base leading-tight line-clamp-2 text-balance">
