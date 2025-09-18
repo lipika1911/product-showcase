@@ -1,5 +1,6 @@
 "use client"
 
+import { Pagination } from "@/components/pagination";
 import { ProductGrid } from "@/components/product-grid";
 import { useProducts } from "@/hooks/use-product";
 import { Product } from "@/types";
@@ -10,6 +11,11 @@ export default function Home() {
     products,
     loading,
     error,
+    total,
+    currentPage,
+    totalPages,
+    nextPage,
+    prevPage,
   } = useProducts()
 
   const handleProductClick = (product: Product) => {
@@ -55,8 +61,16 @@ export default function Home() {
             />
 
             {/* Pagination */}
-            <div>Pagination</div>
-
+            {!loading && !error && products.length > 0 && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPrevious={prevPage}
+                onNext={nextPage}
+                total={total}
+                limit={20}
+              />
+            )}
           </div>
         </div>
       </main>

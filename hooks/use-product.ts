@@ -8,6 +8,8 @@ export function useProducts() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [total, setTotal] = useState(0)
+  const [currentPage, setCurrentPage] = useState(1)
 
   const limit = 20
 
@@ -28,6 +30,7 @@ export function useProducts() {
       const products = response.products;
 
       setProducts(products)
+      setTotal(response.total)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch products")
     } finally {
@@ -36,12 +39,31 @@ export function useProducts() {
   }
 
   useEffect(() => {
-    fetchProducts()
-  }, [])
+    fetchProducts(currentPage)
+  }, [currentPage])
+
+  const nextPage = () => {
+    if (currentPage * limit < total) {
+      setCurrentPage((prev) => prev + 1)
+    }
+  }
+
+  const prevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1)
+    }
+  }
+
+  const totalPages = Math.ceil(total / limit)
 
   return {
     products,
     loading,
     error,
+    total,
+    currentPage,
+    totalPages,
+    nextPage,
+    prevPage,
   }
 }
