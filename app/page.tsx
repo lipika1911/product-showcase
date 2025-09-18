@@ -6,8 +6,11 @@ import { ProductDetailModal } from "@/components/product-detail-modal";
 import { ProductGrid } from "@/components/product-grid";
 import { ProductGridHeader } from "@/components/product-grid-header";
 import { useProducts } from "@/hooks/use-product";
+import { Button } from "@/components/ui/button"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Product } from "@/types";
 import { useState } from "react";
+import { Filter } from "lucide-react";
 
 export default function Home() {
   const {
@@ -26,6 +29,7 @@ export default function Home() {
 
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
 
   const handleProductClick = (product: Product) => {
     setSelectedProduct(product)
@@ -52,6 +56,31 @@ export default function Home() {
                 Discover amazing products from our curated collection
               </p>
             </div>
+
+            {/* Filter Section for Mobile */}
+            <div className="md:hidden">
+                <Sheet open={mobileFiltersOpen} onOpenChange={setMobileFiltersOpen}>
+                  <SheetTrigger asChild>
+                    <Button variant="outline" size="sm" className="mt-2">
+                      <Filter className="h-4 w-4 mr-2" />
+                      Filters
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="left" className="w-80 p-0">
+                    <div className="p-6">
+                      <FiltersSidebar
+                        categories={categories}
+                        filters={filters}
+                        onFiltersChange={(newFilters) => {
+                          updateFilters(newFilters)
+                          setMobileFiltersOpen(false)
+                        }}
+                        totalProducts={total}
+                      />
+                    </div>
+                  </SheetContent>
+                </Sheet>
+              </div>
           </div>
         </div>
       </header>
