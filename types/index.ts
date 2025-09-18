@@ -57,3 +57,9 @@ export interface FilterState {
   sortBy: string
   sortOrder: "asc" | "desc"
 }
+
+export interface Category {
+  slug: string
+  name: string
+  url: string
+}

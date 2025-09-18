@@ -1,4 +1,4 @@
-import type { Product, ProductsResponse } from "../types"
+import type { Category, Product, ProductsResponse } from "../types"
 
 const BASE_URL = "https://dummyjson.com"
 
@@ -19,12 +19,12 @@ export class ProductAPI {
     return response.json()
   }
 
-  static async getCategories(): Promise<string[]> {
+  static async getCategories(): Promise<Category[]> {
     const response = await fetch(`${BASE_URL}/products/categories`)
     if (!response.ok) {
       throw new Error("Failed to fetch categories")
     }
-    return response.json()
+    return response.json() as Promise<Category[]>
   }
 
   static async getProductsByCategory(category: string, limit = 20, skip = 0): Promise<ProductsResponse> {

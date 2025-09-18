@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import type { Product, ProductsResponse, FilterState } from "../types"
+import type { Product, ProductsResponse, FilterState, Category } from "../types"
 import { ProductAPI } from "@/lib/api"
 import { sortProducts } from "../utils/sorting"
 
@@ -48,8 +48,8 @@ export function useProducts() {
 
   const fetchCategories = async () => {
     try {
-      const categoriesData = await ProductAPI.getCategories()
-      setCategories(categoriesData)
+      const categoriesData: Category[] = await ProductAPI.getCategories()
+      setCategories(categoriesData.map(c => c.slug)) // no TS error
     } catch (err) {
       console.error("Failed to fetch categories:", err)
     }
