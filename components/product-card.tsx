@@ -8,17 +8,18 @@ import type { Product } from "../types"
 
 interface ProductCardProps {
   product: Product
+  onClick?: () => void
+  className?: string
 }
 
-export function ProductCard({
-  product
-}: ProductCardProps) {
+export function ProductCard({ product, onClick, className }: ProductCardProps){
 
   const discountedPrice = product.price * (1 - product.discountPercentage / 100)
 
   return (
     <Card
       className="group cursor-pointer overflow-hidden transition-shadow duration-300 hover:shadow-xl"
+      onClick={onClick}
     >
       <div className="relative aspect-square overflow-hidden">
         <Image

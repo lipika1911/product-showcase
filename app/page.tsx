@@ -2,10 +2,12 @@
 
 import { FiltersSidebar } from "@/components/filters-sidebar";
 import { Pagination } from "@/components/pagination";
+import { ProductDetailModal } from "@/components/product-detail-modal";
 import { ProductGrid } from "@/components/product-grid";
 import { ProductGridHeader } from "@/components/product-grid-header";
 import { useProducts } from "@/hooks/use-product";
 import { Product } from "@/types";
+import { useState } from "react";
 
 export default function Home() {
   const {
@@ -22,9 +24,20 @@ export default function Home() {
     prevPage,
   } = useProducts();
 
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
+  const [modalOpen, setModalOpen] = useState(false)
+
   const handleProductClick = (product: Product) => {
-    // handle click logic here
-  };
+    setSelectedProduct(product)
+    setModalOpen(true)
+  }
+
+  const handleModalClose = (open: boolean) => {
+    setModalOpen(open)
+    if (!open) {
+      setSelectedProduct(null)
+    }
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -91,6 +104,9 @@ export default function Home() {
           )}
         </div>
       </main>
+
+      {/* Product Detail Modal */}
+      <ProductDetailModal product={selectedProduct} open={modalOpen} onOpenChange={handleModalClose} />
     </div>
   );
 }

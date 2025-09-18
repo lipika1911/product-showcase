@@ -33,6 +33,8 @@ export function ProductGrid({
         <ProductCard
           key={product.id}
           product={product}
+          onClick={() => onProductClick(product)}
+          className="product-card"
         />
       ))}
     </div>
